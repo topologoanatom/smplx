@@ -8,7 +8,7 @@
 
 ## What
 
-Simplex is a Rust-based, comprehensive development framework for [simplicity](https://github.com/BlockstreamResearch/SimplicityHL) smart contracts, aiming to provide a rich tooling suite for implementing, testing, and deploying smart contract on [Liquid](https://liquid.net/).
+Simplex is a Rust-based, comprehensive development framework for [Simplicity](https://github.com/BlockstreamResearch/SimplicityHL) smart contracts, aiming to provide a rich tooling suite for implementing, testing, and deploying smart contract on [Liquid](https://liquid.net/).
 
 - CLI for managing simplicity-based projects.
 - SDK with essential simplicity utilities.
@@ -16,7 +16,7 @@ Simplex is a Rust-based, comprehensive development framework for [simplicity](ht
 - Extensive framework configuration.
 
 > [!WARNING]
-> The framework is in the extremely early stage of development, unforeseen breaking changes and critical bugs are expected.
+> The framework is at the extremely early stage of development, unforeseen breaking changes and critical bugs are expected.
 
 ## Installation
 
