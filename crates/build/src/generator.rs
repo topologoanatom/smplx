@@ -163,6 +163,8 @@ impl ArtifactsGenerator {
         let code = quote! {
             use simplex::include_simf;
             use simplex::program::{ArgumentsTrait, Program};
+            use simplex::provider::SimplicityNetwork;
+            use simplex::simplicityhl::elements::Script;
             use simplex::simplicityhl::elements::secp256k1_zkp::XOnlyPublicKey;
 
             pub struct #program_name {
@@ -172,17 +174,57 @@ impl ArtifactsGenerator {
             impl #program_name {
                 pub const SOURCE: &'static str = #include_simf_module::#include_simf_source_const;
 
-                pub fn new(public_key: XOnlyPublicKey, arguments: impl ArgumentsTrait + 'static) -> Self {
+                pub fn new(arguments: impl ArgumentsTrait + 'static) -> Self {
                     Self {
-                        program: Program::new(Self::SOURCE, public_key, Box::new(arguments)),
+                        program: Program::new(Self::SOURCE, Box::new(arguments)),
                     }
                 }
 
-                pub fn get_program(&self) -> &Program {
-                    &self.program
+                pub fn with_pub_key(mut self, pub_key: XOnlyPublicKey) -> Self {
+                    self.program = self.program.with_pub_key(pub_key);
+
+                    self
                 }
 
-                pub fn get_program_mut(&mut self) -> &mut Program {
+                pub fn with_storage_capacity(mut self, capacity: usize) -> Self {
+                    self.program = self.program.with_storage_capacity(capacity);
+
+                    self
+                }
+
+                pub fn set_storage_at(&mut self, index: usize, new_value: [u8; 32]) {
+                    self.program.set_storage_at(index, new_value);
+                }
+
+                pub fn get_storage_len(&self) -> usize {
+                    self.program.get_storage_len()
+                }
+
+                pub fn get_storage(&self) -> &[[u8; 32]] {
+                    self.program.get_storage()
+                }
+
+                pub fn get_storage_at(&self, index: usize) -> [u8; 32] {
+                    self.program.get_storage_at(index)
+                }
+
+                pub fn get_script_pubkey(&self, network: &SimplicityNetwork) -> Script {
+                    self.program.get_script_pubkey(network)
+                }
+
+                pub fn get_script_hash(&self, network: &SimplicityNetwork) -> [u8; 32] {
+                    self.program.get_script_hash(network)
+                }
+            }
+
+            impl AsRef<Program> for #program_name {
+                fn as_ref(&self) -> &Program {
+                    &self.program
+                }
+            }
+
+            impl AsMut<Program> for #program_name {
+                fn as_mut(&mut self) -> &mut Program {
                     &mut self.program
                 }
             }

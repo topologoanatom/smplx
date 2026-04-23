@@ -1,6 +1,6 @@
 [package]
 name = "smplx-regtest"
-version = "0.0.3"
+version = "0.0.4"
 description = "Simplex regtest command internal implementation"
 license.workspace = true
 edition.workspace = true
@@ -17,3 +17,6 @@ thiserror = { workspace = true }
 electrsd = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
