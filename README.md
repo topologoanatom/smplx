@@ -1,7 +1,8 @@
 ![](https://github.com/user-attachments/assets/c4661df7-6101-4c46-9376-dedaeef8056b)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/BlockstreamResearch/smplx/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/ci.yml)
+[![Tests](https://github.com/BlockstreamResearch/smplx/actions/workflows/crates.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/crates.yml)
+[![Integration](https://github.com/BlockstreamResearch/smplx/actions/workflows/fixtures.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/fixtures.yml)
 [![Community](https://img.shields.io/endpoint?color=neon&logo=telegram&label=Chat&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Fsimplicity_community)](https://t.me/simplicity_community)
 
 # Smplx
