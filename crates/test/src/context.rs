@@ -2,9 +2,11 @@ use std::path::PathBuf;
 
 use electrsd::bitcoind::bitcoincore_rpc::Auth;
 
+use simplicityhl::tracker::TrackerLogLevel;
 use smplx_regtest::Regtest;
 use smplx_regtest::client::RegtestClient;
 
+use smplx_sdk::program::core::set_config_log_level;
 use smplx_sdk::provider::{EsploraProvider, ProviderInfo, ProviderTrait, SimplexProvider, SimplicityNetwork};
 use smplx_sdk::signer::Signer;
 use smplx_sdk::utils::random_mnemonic;
@@ -24,6 +26,16 @@ pub struct TestContext {
 impl TestContext {
     pub fn new(config_path: PathBuf) -> Result<Self, TestError> {
         let config = TestConfig::from_file(&config_path)?;
+
+        let log_level = match config.log_level.as_ref().map(|s| s.to_lowercase()).as_deref() {
+            None | Some("none") => TrackerLogLevel::None,
+            Some("debug") => TrackerLogLevel::Debug,
+            Some("warning") => TrackerLogLevel::Warning,
+            Some("trace") => TrackerLogLevel::Trace,
+            _ => return Err(TestError::BadLogLevelName(config.log_level.unwrap())),
+        };
+
+        set_config_log_level(log_level);
 
         let (signer, provider_info, client) = Self::setup(&config)?;
 

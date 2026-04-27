@@ -10,6 +10,7 @@
 
 # [test]
 # mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
+# log_level = "none" # none | debug | warning | trace
 
 # [test.esplora]
 # url = "<esplora url>"
@@ -19,3 +20,6 @@
 # url = "<rpc url>"
 # username = "<rpc username>"
 # password = "<rpc password>"
+
+[test]
+log_level = "warning"
