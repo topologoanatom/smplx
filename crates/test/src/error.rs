@@ -1,6 +1,6 @@
 use std::io;
 
-use smplx_sdk::provider::ProviderError;
+use smplx_sdk::{program::logging::LogLevelParseError, provider::ProviderError};
 
 use smplx_regtest::error::RegtestError;
 
@@ -21,6 +21,6 @@ pub enum TestError {
     #[error("Network name should either be `Liquid`, `LiquidTestnet` or `ElementsRegtest`, got: {0}")]
     BadNetworkName(String),
 
-    #[error("Log level should either be `None`, `Debug`, `Warning` or `Trace`, got: {0}")]
-    BadLogLevelName(String),
+    #[error(transparent)]
+    BadLogLevelName(#[from] LogLevelParseError),
 }

@@ -32,8 +32,6 @@ fn expand_inner(input: &syn::ItemFn, args: TestArgs) -> syn::Result<TokenStream>
                 #body
             }
 
-            #log_level_init
-
             let test_context = match std::env::var(#simplex_test_env) {
                 Err(_) => {
                     panic!("Failed to run this test, required to use `simplex test`");
@@ -42,6 +40,8 @@ fn expand_inner(input: &syn::ItemFn, args: TestArgs) -> syn::Result<TokenStream>
                     TestContext::new(PathBuf::from(path)).unwrap()
                 }
             };
+
+            #log_level_init
 
             #name(test_context)
         }
@@ -76,7 +76,9 @@ impl TestArgs {
     fn log_level_init(&self) -> Option<TokenStream> {
         self.log_level.as_ref().map(|level| {
             quote::quote! {
-                ::simplex::set_tracker_log_level(::simplex::TrackerLogLevel::#level);
+                if ::simplex::get_config_log_level().is_none() {
+                    ::simplex::set_tracker_log_level(::simplex::TrackerLogLevel::#level);
+                }
             }
         })
     }

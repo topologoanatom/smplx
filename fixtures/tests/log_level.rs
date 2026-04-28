@@ -1,5 +1,5 @@
-use simplex_example::artifacts::dummy_panic::DummyPanicProgram;
-use simplex_example::artifacts::dummy_panic::derived_dummy_panic::{DummyPanicArguments, DummyPanicWitness};
+use simplex_fixtures::artifacts::dummy_panic::DummyPanicProgram;
+use simplex_fixtures::artifacts::dummy_panic::derived_dummy_panic::{DummyPanicArguments, DummyPanicWitness};
 
 use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
 
@@ -13,7 +13,7 @@ fn setup_dummy(context: &simplex::TestContext) -> (DummyPanicProgram, simplex::s
     (dummy, script)
 }
 
-#[simplex::test(log_level = Trace)]
+#[simplex::test(log_level = Warning)]
 fn dummy_log_level(context: simplex::TestContext) -> anyhow::Result<()> {
     let provider = context.get_default_provider();
     let signer = context.get_default_signer();

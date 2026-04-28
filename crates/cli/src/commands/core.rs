@@ -1,4 +1,7 @@
+use std::str::FromStr;
+
 use clap::{Args, Subcommand};
+use smplx_sdk::program::logging::LogLevel;
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
@@ -33,7 +36,7 @@ pub struct InitFlags {
     pub lib: bool,
 }
 
-#[derive(Debug, Args, Copy, Clone)]
+#[derive(Debug, Args, Clone)]
 pub struct TestFlags {
     /// Show output from successful tests
     #[arg(long)]
@@ -44,4 +47,15 @@ pub struct TestFlags {
     /// Run ignored tests
     #[arg(long)]
     pub ignored: bool,
+    /// Enable trace log level
+    #[arg(short = 'v', long, conflicts_with = "log_level")]
+    pub verbose: bool,
+    /// Set log level explicitly (none | debug | warning | trace)
+    #[arg(long = "log-level", value_name = "LEVEL", conflicts_with = "verbose", value_parser = parse_log_level_arg)]
+    pub log_level: Option<String>,
+}
+
+fn parse_log_level_arg(s: &str) -> Result<String, String> {
+    LogLevel::from_str(s).map_err(|e| e.to_string())?;
+    Ok(s.to_string())
 }

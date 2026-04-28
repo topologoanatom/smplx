@@ -1,5 +1,5 @@
 use std::iter;
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
 
 use dyn_clone::DynClone;
 
@@ -10,51 +10,15 @@ use simplicityhl::simplicity::bitcoin::{XOnlyPublicKey, secp256k1};
 use simplicityhl::simplicity::jet::Elements;
 use simplicityhl::simplicity::jet::elements::{ElementsEnv, ElementsUtxo};
 use simplicityhl::simplicity::{BitMachine, RedeemNode, Value, leaf_version};
-use simplicityhl::tracker::{DefaultTracker, TrackerLogLevel};
+use simplicityhl::tracker::DefaultTracker;
 use simplicityhl::{Parameters, WitnessTypes, WitnessValues};
 
 use super::arguments::ArgumentsTrait;
 use super::error::ProgramError;
 
+use crate::program::logging::take_tracker_log_level;
 use crate::provider::SimplicityNetwork;
 use crate::utils::{hash_script, tap_data_hash, tr_unspendable_key};
-use std::cell::Cell;
-
-/// Global config log level, initialized in `test::context::TestContext::new()`.
-static CONFIG_LOG_LEVEL: OnceLock<TrackerLogLevel> = OnceLock::new();
-
-pub fn set_config_log_level(level: TrackerLogLevel) {
-    let _ = CONFIG_LOG_LEVEL.set(level);
-}
-
-pub fn get_config_log_level() -> Option<TrackerLogLevel> {
-    CONFIG_LOG_LEVEL.get().copied()
-}
-
-thread_local! {
-    /// Thread specific log level holder.
-    static THREAD_LOG_LEVEL: Cell<TrackerLogLevel> = Cell::new(
-        CONFIG_LOG_LEVEL.get().copied().unwrap_or(TrackerLogLevel::None)
-    );
-}
-
-pub fn set_tracker_log_level(level: TrackerLogLevel) {
-    THREAD_LOG_LEVEL.with(|cell| cell.set(level));
-}
-
-pub fn get_tracker_log_level() -> TrackerLogLevel {
-    THREAD_LOG_LEVEL.get()
-}
-
-/// Returns the log level and resets to config's level or `None` if config is not initialized.
-pub fn take_tracker_log_level() -> TrackerLogLevel {
-    THREAD_LOG_LEVEL.with(|cell| {
-        let taked_level = cell.get();
-        let config_level = CONFIG_LOG_LEVEL.get().copied().unwrap_or(TrackerLogLevel::None);
-        cell.set(config_level);
-        taked_level
-    })
-}
 
 pub trait ProgramTrait: DynClone {
     fn get_argument_types(&self) -> Result<Parameters, ProgramError>;
