@@ -33,7 +33,7 @@ pub struct InitFlags {
     pub lib: bool,
 }
 
-#[derive(Debug, Args, Copy, Clone)]
+#[derive(Debug, Args, Clone)]
 pub struct TestFlags {
     /// Show output from successful tests
     #[arg(long)]
@@ -44,4 +44,7 @@ pub struct TestFlags {
     /// Run ignored tests
     #[arg(long)]
     pub ignored: bool,
+    /// Log simplicity pruning stack trace
+    #[arg(short = 'v', long)]
+    pub verbose: bool,
 }

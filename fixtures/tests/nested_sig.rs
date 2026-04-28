@@ -1,5 +1,5 @@
 use simplex::constants::DUMMY_SIGNATURE;
-use simplex::simplicityhl::elements::{Script, Txid};
+use simplex::simplicityhl::elements::Script;
 use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
 
 use simplex_fixtures::artifacts::nested_sig::NestedSigProgram;
@@ -18,21 +18,21 @@ fn get_nested_sig(context: &simplex::TestContext) -> (NestedSigProgram, Script) 
     (program, script)
 }
 
-fn fund_nested_sig(context: &simplex::TestContext) -> anyhow::Result<Txid> {
+fn fund_nested_sig(context: &simplex::TestContext) -> anyhow::Result<()> {
     let signer = context.get_default_signer();
     let (_, script) = get_nested_sig(context);
 
     let txid = signer.send(script, 50_000)?;
     println!("Funded: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
 fn spend_nested_sig(
     context: &simplex::TestContext,
     witness: NestedSigWitness,
     sig_path: &[&str],
-) -> anyhow::Result<Txid> {
+) -> anyhow::Result<()> {
     let signer = context.get_default_signer();
     let provider = context.get_default_provider();
 
@@ -51,62 +51,47 @@ fn spend_nested_sig(
     let txid = signer.broadcast(&ft)?;
     println!("Broadcast: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
 #[simplex::test]
 fn test_inherit_spend(context: simplex::TestContext) -> anyhow::Result<()> {
-    let provider = context.get_default_provider();
-
-    let fund_tx = fund_nested_sig(&context)?;
-    provider.wait(&fund_tx)?;
+    fund_nested_sig(&context)?;
 
     // Left - inheritor sig injected by signer at path L
     let witness = NestedSigWitness {
         inherit_or_not: simplex::either::Either::Left((DUMMY_SIGNATURE, [0; 32])),
     };
 
-    let spend_tx = spend_nested_sig(&context, witness, &["Left", "0"])?;
-    provider.wait(&spend_tx)?;
-    println!("Inherit spend confirmed");
+    spend_nested_sig(&context, witness, &["Left", "0"])?;
 
     Ok(())
 }
 
 #[simplex::test]
 fn test_cold_spend(context: simplex::TestContext) -> anyhow::Result<()> {
-    let provider = context.get_default_provider();
-
-    let fund_tx = fund_nested_sig(&context)?;
-    provider.wait(&fund_tx)?;
+    fund_nested_sig(&context)?;
 
     // Right Left - cold sig injected by signer at path R L
     let witness = NestedSigWitness {
         inherit_or_not: simplex::either::Either::Right(simplex::either::Either::Left(DUMMY_SIGNATURE)),
     };
 
-    let spend_tx = spend_nested_sig(&context, witness, &["Right", "Left"])?;
-    provider.wait(&spend_tx)?;
-    println!("Cold spend confirmed");
+    spend_nested_sig(&context, witness, &["Right", "Left"])?;
 
     Ok(())
 }
 
 #[simplex::test]
 fn test_hot_spend(context: simplex::TestContext) -> anyhow::Result<()> {
-    let provider = context.get_default_provider();
-
-    let fund_tx = fund_nested_sig(&context)?;
-    provider.wait(&fund_tx)?;
+    fund_nested_sig(&context)?;
 
     // Right Right - hot sig injected by signer at path R R
     let witness = NestedSigWitness {
         inherit_or_not: simplex::either::Either::Right(simplex::either::Either::Right([DUMMY_SIGNATURE, [0; 64]])),
     };
 
-    let spend_tx = spend_nested_sig(&context, witness, &["Right", "Right", "0"])?;
-    provider.wait(&spend_tx)?;
-    println!("Hot spend confirmed");
+    spend_nested_sig(&context, witness, &["Right", "Right", "0"])?;
 
     Ok(())
 }

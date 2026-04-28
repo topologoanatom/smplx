@@ -3,7 +3,8 @@ use std::path::{Path, PathBuf};
 
 use smplx_build::BuildConfig;
 use smplx_regtest::RegtestConfig;
-use smplx_test::TestConfig;
+use smplx_sdk::program::TrackerLogLevel;
+use smplx_test::{TestConfig, config::Verbosity};
 
 use super::error::ConfigError;
 
@@ -47,6 +48,11 @@ impl Config {
     }
 
     fn validate(config: &Config) -> Result<(), ConfigError> {
+        match config.test.verbosity {
+            Some(verbosity) => Self::validate_verbosity(verbosity),
+            None => Ok(()),
+        }?;
+
         match config.test.esplora.clone() {
             Some(esplora_config) => {
                 Self::validate_network(&esplora_config.network)?;
@@ -58,6 +64,13 @@ impl Config {
                 Ok(())
             }
             None => Ok(()),
+        }
+    }
+
+    fn validate_verbosity(verbosity: Verbosity) -> Result<(), ConfigError> {
+        match TryInto::<TrackerLogLevel>::try_into(verbosity) {
+            Ok(_) => Ok(()),
+            Err(val) => Err(ConfigError::BadVersbosityMode(val.0)),
         }
     }
 

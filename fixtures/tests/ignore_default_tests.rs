@@ -2,7 +2,6 @@
 
 #[cfg(test)]
 mod test {
-
     #[simplex::test]
     fn smplx_test_invoked(_: simplex::TestContext) -> anyhow::Result<()> {
         Ok(())

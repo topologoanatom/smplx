@@ -67,6 +67,7 @@ rpc_password = "password"
 [test]
 mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
 bitcoins = 10_000_000
+verbosity = 3 # 1 - none, 2 - warning, 3 - debug, 4 - trace
 
 [test.esplora]
 url = "<esplora url>"
@@ -94,6 +95,7 @@ Where:
 - `test` (`simplex test` config)
   - `mnemonic` - The signer's mnemonic internal regtest will send initial funds to.
   - `bitcoins` - Initial coins available to the signer.
+  - `verbosity` - Simplicity pruning log level.
   - `esplora`
     - `url` - Esplora API endpoint url.
     - `network` - Esplora network type (`Liquid`, `LiquidTestnet`, `ElementsRegtest`).

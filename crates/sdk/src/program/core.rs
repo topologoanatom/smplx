@@ -10,8 +10,10 @@ use simplicityhl::simplicity::bitcoin::{XOnlyPublicKey, secp256k1};
 use simplicityhl::simplicity::jet::Elements;
 use simplicityhl::simplicity::jet::elements::{ElementsEnv, ElementsUtxo};
 use simplicityhl::simplicity::{BitMachine, RedeemNode, Value, leaf_version};
-use simplicityhl::tracker::{DefaultTracker, TrackerLogLevel};
+use simplicityhl::tracker::DefaultTracker;
 use simplicityhl::{Parameters, WitnessTypes, WitnessValues};
+
+use crate::global::get_log_level;
 
 use super::arguments::ArgumentsTrait;
 use super::error::ProgramError;
@@ -124,8 +126,7 @@ impl ProgramTrait for Program {
             .satisfy(witness.clone())
             .map_err(ProgramError::WitnessSatisfaction)?;
 
-        // TODO: global config for TrackerLogLevel
-        let mut tracker = DefaultTracker::new(satisfied.debug_symbols()).with_log_level(TrackerLogLevel::Debug);
+        let mut tracker = DefaultTracker::new(satisfied.debug_symbols()).with_log_level(get_log_level());
 
         let env = self.get_env(pst, input_index, network)?;
 

@@ -7,6 +7,7 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use smplx_regtest::RegtestConfig;
+use smplx_sdk::program::TrackerLogLevel;
 
 use super::error::TestError;
 
@@ -21,6 +22,7 @@ pub struct TestConfig {
     pub bitcoins: u64,
     pub esplora: Option<EsploraConfig>,
     pub rpc: Option<RpcConfig>,
+    pub verbosity: Option<Verbosity>,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -34,6 +36,23 @@ pub struct RpcConfig {
     pub url: String,
     pub username: String,
     pub password: String,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Verbosity(pub u64);
+
+impl TryInto<TrackerLogLevel> for Verbosity {
+    type Error = Self;
+
+    fn try_into(self) -> Result<TrackerLogLevel, Self::Error> {
+        match self {
+            Verbosity(1) => Ok(TrackerLogLevel::None),
+            Verbosity(2) => Ok(TrackerLogLevel::Warning),
+            Verbosity(3) => Ok(TrackerLogLevel::Debug),
+            Verbosity(4) => Ok(TrackerLogLevel::Trace),
+            _ => Err(self),
+        }
+    }
 }
 
 impl TestConfig {
@@ -78,6 +97,7 @@ impl Default for TestConfig {
             bitcoins: DEFAULT_BITCOINS,
             esplora: None,
             rpc: None,
+            verbosity: Some(Verbosity(3)),
         }
     }
 }

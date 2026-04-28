@@ -36,7 +36,7 @@ fn expand_inner(input: &syn::ItemFn, _args: AttributeArgs) -> syn::Result<proc_m
             }
 
             let test_context = match std::env::var(#simplex_test_env) {
-                Err(e) => {
+                Err(_) => {
                     panic!("Failed to run this test, required to use `simplex test`");
                 },
                 Ok(path) => {
