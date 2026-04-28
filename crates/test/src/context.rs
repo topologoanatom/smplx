@@ -1,12 +1,11 @@
 use std::path::PathBuf;
-use std::str::FromStr;
 
 use electrsd::bitcoind::bitcoincore_rpc::Auth;
 
 use smplx_regtest::Regtest;
 use smplx_regtest::client::RegtestClient;
 
-use smplx_sdk::program::logging::{LogLevel, set_config_log_level};
+use smplx_sdk::global::set_log_level;
 use smplx_sdk::provider::{EsploraProvider, ProviderInfo, ProviderTrait, SimplexProvider, SimplicityNetwork};
 use smplx_sdk::signer::Signer;
 use smplx_sdk::utils::random_mnemonic;
@@ -27,9 +26,7 @@ impl TestContext {
     pub fn new(config_path: PathBuf) -> Result<Self, TestError> {
         let config = TestConfig::from_file(&config_path)?;
 
-        if let Some(level) = config.log_level.as_ref() {
-            set_config_log_level(LogLevel::from_str(level).expect("parsed on CLI side").0);
-        }
+        set_log_level(config.verbosity.expect("This will be set"));
 
         let (signer, provider_info, client) = Self::setup(&config)?;
 

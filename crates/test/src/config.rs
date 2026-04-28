@@ -21,7 +21,7 @@ pub struct TestConfig {
     pub bitcoins: u64,
     pub esplora: Option<EsploraConfig>,
     pub rpc: Option<RpcConfig>,
-    pub log_level: Option<String>,
+    pub verbosity: Option<u64>, // 1 -> none, 2 -> info, 3 -> debug -> 4 trace
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -79,7 +79,7 @@ impl Default for TestConfig {
             bitcoins: DEFAULT_BITCOINS,
             esplora: None,
             rpc: None,
-            log_level: None,
+            verbosity: Some(3),
         }
     }
 }

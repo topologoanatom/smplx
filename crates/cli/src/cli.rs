@@ -39,13 +39,7 @@ impl Cli {
             }
             Command::Test { name, additional_flags } => {
                 let config_path = Config::get_default_path()?;
-                let mut loaded_config = Config::load(config_path)?;
-
-                if additional_flags.verbose {
-                    loaded_config.test.log_level = Some("trace".to_string())
-                } else {
-                    loaded_config.test.log_level = additional_flags.log_level.clone();
-                }
+                let loaded_config = Config::load(config_path)?;
 
                 let filter = name.clone().unwrap_or_default();
 

@@ -1,7 +1,6 @@
 pub mod arguments;
 pub mod core;
 pub mod error;
-pub mod logging;
 pub mod witness;
 
 pub use arguments::ArgumentsTrait;

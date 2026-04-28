@@ -9,8 +9,13 @@ use super::error::CommandError;
 pub struct Test {}
 
 impl Test {
-    pub fn run(config: TestConfig, filter: String, flags: &TestFlags) -> Result<(), CommandError> {
+    pub fn run(mut config: TestConfig, filter: String, flags: &TestFlags) -> Result<(), CommandError> {
         let cache_path = Self::get_test_config_cache_name()?;
+
+        if flags.verbose {
+            config.verbosity = Some(4)
+        }
+
         config.to_file(&cache_path)?;
 
         let mut cargo_test_command = Self::build_cargo_test_command(&cache_path, filter, flags);

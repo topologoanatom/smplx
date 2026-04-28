@@ -41,6 +41,7 @@ impl Config {
         let conf_str = std::fs::read_to_string(path)?;
         let config: Config = toml::from_str(conf_str.as_str()).map_err(ConfigError::UnableToDeserialize)?;
 
+        // validate verbosity config
         Self::validate(&config)?;
 
         Ok(config)
