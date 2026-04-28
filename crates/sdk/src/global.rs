@@ -1,22 +1,30 @@
-use std::sync::Mutex;
+use std::sync::OnceLock;
 
-struct GlobalConfig {
-    log_level: u64,
+use simplicityhl::tracker::TrackerLogLevel;
+
+#[derive(Clone, Copy)]
+pub struct GlobalConfig {
+    log_level: TrackerLogLevel,
 }
 
-impl GlobalConfig {
-    const fn new() -> Self {
-        Self { log_level: 3 }
+impl Default for GlobalConfig {
+    fn default() -> Self {
+        Self {
+            log_level: TrackerLogLevel::Debug,
+        }
     }
 }
 
-static GLOBAL_CONFIG: Mutex<GlobalConfig> = Mutex::new(GlobalConfig::new());
+static GLOBAL_CONFIG: OnceLock<GlobalConfig> = OnceLock::new();
 
-pub fn set_log_level(level: u64) {
-    // validate level bounds
-    GLOBAL_CONFIG.lock().unwrap().log_level = level
+pub fn set_global_config(log_level: TrackerLogLevel) -> Result<(), GlobalConfig> {
+    GLOBAL_CONFIG.set(GlobalConfig { log_level })
 }
 
-pub fn get_log_level() -> u64 {
-    GLOBAL_CONFIG.lock().unwrap().log_level
+/// Returns default log level if `GLOBAL_CONFIG` is not initialized
+pub fn get_log_level() -> TrackerLogLevel {
+    GLOBAL_CONFIG
+        .get()
+        .map(|config| config.log_level)
+        .unwrap_or(GlobalConfig::default().log_level)
 }

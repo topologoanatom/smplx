@@ -13,7 +13,7 @@ fn setup_dummy(context: &simplex::TestContext) -> (DummyPanicProgram, simplex::s
     (dummy, script)
 }
 
-#[simplex::test(log_level = Warning)]
+#[simplex::test]
 fn dummy_log_level(context: simplex::TestContext) -> anyhow::Result<()> {
     let provider = context.get_default_provider();
     let signer = context.get_default_signer();

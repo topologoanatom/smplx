@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::process::Stdio;
 
+use smplx_test::config::Verbosity;
 use smplx_test::{SMPLX_TEST_MARKER, TestConfig};
 
 use super::core::TestFlags;
@@ -13,7 +14,7 @@ impl Test {
         let cache_path = Self::get_test_config_cache_name()?;
 
         if flags.verbose {
-            config.verbosity = Some(4)
+            config.verbosity = Some(Verbosity(4))
         }
 
         config.to_file(&cache_path)?;

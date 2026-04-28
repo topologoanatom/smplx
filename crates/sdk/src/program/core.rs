@@ -10,7 +10,7 @@ use simplicityhl::simplicity::bitcoin::{XOnlyPublicKey, secp256k1};
 use simplicityhl::simplicity::jet::Elements;
 use simplicityhl::simplicity::jet::elements::{ElementsEnv, ElementsUtxo};
 use simplicityhl::simplicity::{BitMachine, RedeemNode, Value, leaf_version};
-use simplicityhl::tracker::{DefaultTracker, TrackerLogLevel};
+use simplicityhl::tracker::DefaultTracker;
 use simplicityhl::{Parameters, WitnessTypes, WitnessValues};
 
 use crate::global::get_log_level;
@@ -126,7 +126,7 @@ impl ProgramTrait for Program {
             .satisfy(witness.clone())
             .map_err(ProgramError::WitnessSatisfaction)?;
 
-        let mut tracker = DefaultTracker::new(satisfied.debug_symbols()).with_log_level(self.get_tracker_log_level());
+        let mut tracker = DefaultTracker::new(satisfied.debug_symbols()).with_log_level(get_log_level());
 
         let env = self.get_env(pst, input_index, network)?;
 
@@ -290,18 +290,6 @@ impl Program {
         let script_ver = self.script_version()?;
 
         Ok(info.control_block(&script_ver).expect("control block should exist"))
-    }
-
-    fn get_tracker_log_level(&self) -> TrackerLogLevel {
-        let level = get_log_level();
-
-        match level {
-            1 => TrackerLogLevel::None,
-            2 => TrackerLogLevel::Debug,
-            3 => TrackerLogLevel::Warning,
-            4 => TrackerLogLevel::Trace,
-            _ => unreachable!("Please report a bug"),
-        }
     }
 }
 

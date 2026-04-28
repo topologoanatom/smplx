@@ -1,18 +1,21 @@
 use proc_macro2::TokenStream;
-use syn::parse::{Parse, ParseStream};
+use syn::parse::Parser;
 
 use crate::TEST_ENV_NAME;
 
 pub const SMPLX_TEST_MARKER: &str = "_smplx_test";
 
+type AttributeArgs = syn::punctuated::Punctuated<syn::Meta, syn::Token![,]>;
+
 pub fn expand(args: TokenStream, input: syn::ItemFn) -> syn::Result<TokenStream> {
-    let args = syn::parse2(args)?;
+    let parser = AttributeArgs::parse_terminated;
+    let args = parser.parse2(args)?;
+
     expand_inner(&input, args)
 }
 
-fn expand_inner(input: &syn::ItemFn, args: TestArgs) -> syn::Result<TokenStream> {
-    let log_level_init = args.log_level_init();
-
+// TODO: args?
+fn expand_inner(input: &syn::ItemFn, _args: AttributeArgs) -> syn::Result<proc_macro2::TokenStream> {
     let ret = &input.sig.output;
     let name = quote::format_ident!("{}_{}", &input.sig.ident.to_string(), SMPLX_TEST_MARKER);
     let inputs = &input.sig.inputs;
@@ -41,45 +44,9 @@ fn expand_inner(input: &syn::ItemFn, args: TestArgs) -> syn::Result<TokenStream>
                 }
             };
 
-            #log_level_init
-
             #name(test_context)
         }
     };
 
     Ok(expansion)
-}
-
-struct TestArgs {
-    log_level: Option<syn::Ident>,
-}
-
-impl Parse for TestArgs {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        if input.is_empty() {
-            return Ok(Self { log_level: None });
-        }
-
-        let key: syn::Ident = input.parse()?;
-        let _eq: syn::Token![=] = input.parse()?;
-
-        match key.to_string().as_str() {
-            "log_level" => Ok(Self {
-                log_level: Some(input.parse()?),
-            }),
-            other => Err(syn::Error::new(key.span(), format!("unknown argument `{other}`"))),
-        }
-    }
-}
-
-impl TestArgs {
-    fn log_level_init(&self) -> Option<TokenStream> {
-        self.log_level.as_ref().map(|level| {
-            quote::quote! {
-                if ::simplex::get_config_log_level().is_none() {
-                    ::simplex::set_tracker_log_level(::simplex::TrackerLogLevel::#level);
-                }
-            }
-        })
-    }
 }
