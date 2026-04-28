@@ -241,7 +241,7 @@ impl ArtifactsGenerator {
 
         let code = quote! {
             #![allow(clippy::all)]
-            #[rustfmt::skip]
+            #![rustfmt::skip]
 
             #(pub mod #mod_names);*;
         };
