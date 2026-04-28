@@ -1,4 +1,4 @@
-use simplex::simplicityhl::elements::{Script, Txid};
+use simplex::simplicityhl::elements::Script;
 
 use simplex::constants::DUMMY_SIGNATURE;
 use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
@@ -19,7 +19,7 @@ fn get_p2pk(context: &simplex::TestContext) -> (P2pkProgram, Script) {
     (p2pk, p2pk_script)
 }
 
-fn spend_p2wpkh(context: &simplex::TestContext) -> anyhow::Result<Txid> {
+fn spend_p2wpkh(context: &simplex::TestContext) -> anyhow::Result<()> {
     let signer = context.get_default_signer();
 
     let (_, p2pk_script) = get_p2pk(context);
@@ -27,18 +27,16 @@ fn spend_p2wpkh(context: &simplex::TestContext) -> anyhow::Result<Txid> {
     let txid = signer.send(p2pk_script.clone(), 50)?;
     println!("Broadcast: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
-fn spend_p2pk(context: &simplex::TestContext) -> anyhow::Result<Txid> {
+fn spend_p2pk(context: &simplex::TestContext) -> anyhow::Result<()> {
     let signer = context.get_default_signer();
     let provider = context.get_default_provider();
 
     let (p2pk, p2pk_script) = get_p2pk(context);
 
-    let mut p2pk_utxos = provider.fetch_scripthash_utxos(&p2pk_script)?;
-
-    p2pk_utxos.retain(|utxo| utxo.explicit_asset() == context.get_network().policy_asset());
+    let p2pk_utxos = provider.fetch_scripthash_utxos(&p2pk_script)?;
 
     let mut ft = FinalTransaction::new();
 
@@ -55,22 +53,13 @@ fn spend_p2pk(context: &simplex::TestContext) -> anyhow::Result<Txid> {
     let txid = signer.broadcast(&ft)?;
     println!("Broadcast: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
 #[simplex::test]
 fn basic_test(context: simplex::TestContext) -> anyhow::Result<()> {
-    let provider = context.get_default_provider();
-
-    let txid = spend_p2wpkh(&context)?;
-
-    provider.wait(&txid)?;
-    println!("Confirmed");
-
-    let txid = spend_p2pk(&context)?;
-
-    provider.wait(&txid)?;
-    println!("Confirmed");
+    spend_p2wpkh(&context)?;
+    spend_p2pk(&context)?;
 
     Ok(())
 }

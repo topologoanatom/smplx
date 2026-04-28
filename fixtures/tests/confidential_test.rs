@@ -1,10 +1,10 @@
-use simplex::simplicityhl::elements::{AssetId, Txid};
+use simplex::simplicityhl::elements::AssetId;
 
 use simplex::signer::Signer;
 use simplex::transaction::partial_input::IssuanceInput;
 use simplex::transaction::{FinalTransaction, PartialInput, PartialOutput, RequiredSignature};
 
-fn make_confidential_to_bob(alice: &Signer, bob: &Signer, asset: AssetId) -> anyhow::Result<Txid> {
+fn make_confidential_to_bob(alice: &Signer, bob: &Signer, asset: AssetId) -> anyhow::Result<()> {
     let mut ft = FinalTransaction::new();
 
     ft.add_output(
@@ -15,10 +15,10 @@ fn make_confidential_to_bob(alice: &Signer, bob: &Signer, asset: AssetId) -> any
     let txid = alice.broadcast(&ft)?;
     println!("Broadcast: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
-fn issue_confidential_to_alice(alice: &Signer, bob: &Signer) -> anyhow::Result<Txid> {
+fn issue_confidential_to_alice(alice: &Signer, bob: &Signer) -> anyhow::Result<()> {
     let utxos = bob.get_utxos()?;
 
     let mut ft = FinalTransaction::new();
@@ -43,7 +43,7 @@ fn issue_confidential_to_alice(alice: &Signer, bob: &Signer) -> anyhow::Result<T
     let txid = bob.broadcast(&ft)?;
     println!("Broadcast: {}", txid);
 
-    Ok(txid)
+    Ok(())
 }
 
 #[simplex::test]
@@ -52,22 +52,12 @@ fn confidential_test(context: simplex::TestContext) -> anyhow::Result<()> {
     let alice = context.get_default_signer();
     let bob = context.random_signer();
 
-    let txid = make_confidential_to_bob(alice, &bob, provider.get_network().policy_asset())?;
-
-    provider.wait(&txid)?;
-    println!("Confirmed");
-
-    let txid = issue_confidential_to_alice(alice, &bob)?;
-
-    provider.wait(&txid)?;
-    println!("Confirmed");
+    make_confidential_to_bob(alice, &bob, provider.get_network().policy_asset())?;
+    issue_confidential_to_alice(alice, &bob)?;
 
     // spend confidential
     let txid = bob.send(alice.get_address().script_pubkey(), 50)?;
     println!("Broadcast: {}", txid);
-
-    provider.wait(&txid)?;
-    println!("Confirmed");
 
     Ok(())
 }

@@ -26,7 +26,7 @@ impl TestContext {
     pub fn new(config_path: PathBuf) -> Result<Self, TestError> {
         let config = TestConfig::from_file(&config_path)?;
 
-        // error ignored because we assume that all test use same verbosity
+        // error is ignored because we assume that all tests use the same verbosity
         let _ = set_global_config(
             config
                 .verbosity

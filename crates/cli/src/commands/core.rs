@@ -44,7 +44,7 @@ pub struct TestFlags {
     /// Run ignored tests
     #[arg(long)]
     pub ignored: bool,
-    /// Log simplicity pruning stack traces
+    /// Log simplicity pruning stack trace
     #[arg(short = 'v', long)]
     pub verbose: bool,
 }

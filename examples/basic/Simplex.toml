@@ -7,10 +7,14 @@
 
 # [regtest]
 # mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
+# rpc_port = 18443
+# esplora_port = 3000
+# rpc_user = "user"
+# rpc_password = "password"
 
 # [test]
 # mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
-# log_level = "none" # none | debug | warning | trace
+# verbosity = "3"
 
 # [test.esplora]
 # url = "<esplora url>"
@@ -20,6 +24,3 @@
 # url = "<rpc url>"
 # username = "<rpc username>"
 # password = "<rpc password>"
-
-[test]
-log_level = "warning"

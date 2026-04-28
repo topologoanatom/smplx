@@ -1,7 +1,7 @@
+use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
+
 use simplex_fixtures::artifacts::dummy_panic::DummyPanicProgram;
 use simplex_fixtures::artifacts::dummy_panic::derived_dummy_panic::{DummyPanicArguments, DummyPanicWitness};
-
-use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
 
 fn setup_dummy(context: &simplex::TestContext) -> (DummyPanicProgram, simplex::simplicityhl::elements::Script) {
     let signer = context.get_default_signer();
@@ -21,13 +21,12 @@ fn dummy_log_level(context: simplex::TestContext) -> anyhow::Result<()> {
     let (dummy, script) = setup_dummy(&context);
 
     let txid = signer.send(script.clone(), 50)?;
-    provider.wait(&txid)?;
     println!("Funded dummy script: {}", txid);
 
-    let mut utxos = provider.fetch_scripthash_utxos(&script)?;
-    utxos.retain(|utxo| utxo.explicit_asset() == context.get_network().policy_asset());
+    let utxos = provider.fetch_scripthash_utxos(&script)?;
 
     let mut ft = FinalTransaction::new();
+
     ft.add_program_input(
         PartialInput::new(utxos[0].clone()),
         ProgramInput::new(Box::new(dummy.as_ref().clone()), Box::new(DummyPanicWitness {})),
@@ -35,6 +34,7 @@ fn dummy_log_level(context: simplex::TestContext) -> anyhow::Result<()> {
     );
 
     let result = signer.broadcast(&ft);
+
     assert!(result.is_err(), "expected assert!(false) program to fail execution");
     println!("{}", result.err().unwrap());
 

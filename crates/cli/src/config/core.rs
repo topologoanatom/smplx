@@ -1,9 +1,9 @@
 use serde::Deserialize;
-use smplx_sdk::program::TrackerLogLevel;
 use std::path::{Path, PathBuf};
 
 use smplx_build::BuildConfig;
 use smplx_regtest::RegtestConfig;
+use smplx_sdk::program::TrackerLogLevel;
 use smplx_test::{TestConfig, config::Verbosity};
 
 use super::error::ConfigError;

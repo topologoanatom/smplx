@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use simplicityhl::tracker::TrackerLogLevel;
+use crate::program::TrackerLogLevel;
 
 #[derive(Clone, Copy)]
 pub struct GlobalConfig {
