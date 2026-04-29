@@ -36,7 +36,7 @@ impl Init {
         let manifest = {
             let mut manifest = toml_edit::DocumentMut::new();
             manifest["package"] = toml_edit::Item::Table(toml_edit::Table::new());
-            manifest["package"]["name"] = toml_edit::value(&name);
+            manifest["package"]["name"] = toml_edit::value(name);
             manifest["package"]["version"] = toml_edit::value("0.1.0");
             manifest["package"]["edition"] = toml_edit::value("2024");
 
@@ -47,63 +47,22 @@ impl Init {
                     Self::get_smplx_max_version()?,
                 ))),
             );
-            dep_table.insert(
-                "anyhow",
-                toml_edit::Item::Value(toml_edit::Value::String(toml_edit::Formatted::new("1".to_string()))),
-            );
 
             manifest["dependencies"] = toml_edit::Item::Table(dep_table);
             manifest
         };
 
         let default_lib_rs_file_content: &[u8] = { b"pub mod artifacts;" };
-        let default_test_file_content = r#"// Generated artifacts are produced by `simplex build` from your .simf contracts.
-// Replace `my_project` with your actual crate name.
-//
-//use my_project::artifacts::my_contract::MyContractProgram;
-//use my_project::artifacts::my_contract::derived_p2pk::{MyContractArguments, MyContractWitness};
-//use simplex::constants::DUMMY_SIGNATURE;
-//use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
-
-/// Example: fund a Simplicity script output.
-///
-/// For a complete working example, run:
-///   simplex example basic
-///
-/// Or browse the source at:
-///   <https://github.com/BlockstreamResearch/smplx/tree/master/examples/basic>
+        let default_test_file_content: &[u8] = {
+            b"\
+/// For a complete working example, browse the source at:
+/// <https://github.com/BlockstreamResearch/smplx/blob/master/examples/basic/tests/basic_test.rs>
 #[simplex::test]
-fn my_contract_test(_context: simplex::TestContext) -> anyhow::Result<()> {
-    // --- Step 1: Get your signer and provider ---
-    // let signer = context.get_default_signer();
-    // let provider = context.get_default_provider();
-
-    // --- Step 2: Instantiate your program with typed arguments ---
-    // let arguments = MyContractArguments {
-    //     public_key: signer.get_schnorr_public_key().serialize(),
-    // };
-    // let program = MyContractProgram::new(arguments);
-    // let script = program.get_script_pubkey(context.get_network());
-
-    // --- Step 3: Fund the script ---
-    // let txid = signer.send(script.clone(), 50)?;
-    // println!("Funded: {}", txid);
-
-    // --- Step 4: Fetch UTXOs and spend ---
-    // let utxos = provider.fetch_scripthash_utxos(&script)?;
-    // let witness = MyContractWitness { signature: DUMMY_SIGNATURE };
-    // let mut ft = FinalTransaction::new();
-    // ft.add_program_input(
-    //     PartialInput::new(utxos[0].clone()),
-    //     ProgramInput::new(Box::new(program.as_ref().clone()), Box::new(witness)),
-    //     RequiredSignature::Witness("SIGNATURE".to_string()),
-    // );
-    // let txid = signer.broadcast(&ft)?;
-    // println!("Spent: {}", txid);
-
-    Ok(())
-}
-"#;
+fn dummy_test(context: simplex::TestContext) {
+    // your test code here
+    todo!()
+}"
+        };
         let default_p2pk_simf_file_content: &[u8] = {
             b"\
 fn main() {
@@ -120,7 +79,7 @@ fn main() {
 
         Self::write_to_file(manifest_path, manifest.to_string())?;
         Self::write_to_file(&lib_rs_path, default_lib_rs_file_content)?;
-        Self::write_to_file(&test_rs_path, default_test_file_content.as_bytes())?;
+        Self::write_to_file(&test_rs_path, default_test_file_content)?;
         Self::write_to_file(&p2pk_simf_content, default_p2pk_simf_file_content)?;
         Self::write_to_file(&gitignore_path, default_gitignore_file_content)?;
 
@@ -141,7 +100,7 @@ fn main() {
         Ok(format!("simplex_{}", file_name))
     }
 
-    pub(crate) fn get_smplx_max_version() -> Result<String, InitError> {
+    fn get_smplx_max_version() -> Result<String, InitError> {
         let url = format!("https://crates.io/api/v1/crates/{}", SIMPLEX_CRATE_NAME);
 
         let response = minreq::get(&url)
@@ -163,7 +122,7 @@ fn main() {
         Ok(latest_version.to_string())
     }
 
-    pub(crate) fn write_to_file(path: impl AsRef<Path>, content: impl AsRef<[u8]>) -> Result<(), InitError> {
+    fn write_to_file(path: impl AsRef<Path>, content: impl AsRef<[u8]>) -> Result<(), InitError> {
         let path = path.as_ref();
 
         fs::create_dir_all(

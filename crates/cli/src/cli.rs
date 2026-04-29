@@ -5,9 +5,7 @@ use clap::Parser;
 use crate::commands::Command;
 use crate::commands::build::Build;
 use crate::commands::clean::Clean;
-use crate::commands::example::Example;
 use crate::commands::init::Init;
-use crate::commands::new::New;
 use crate::commands::regtest::Regtest;
 use crate::commands::test::Test;
 use crate::config::Config;
@@ -26,10 +24,18 @@ pub struct Cli {
 impl Cli {
     pub async fn run(&self) -> Result<(), CliError> {
         match &self.command {
-            Command::New { name } => Ok(New::run(name)?),
-            Command::Example { example } => Ok(Example::run(example)?),
-            Command::Init { additional_flags } => {
-                let simplex_conf_path = Config::get_default_path()?;
+            Command::Init { name, additional_flags } => {
+                let simplex_conf_path = match name {
+                    Some(name) => {
+                        let dir = std::env::current_dir()?.join(name);
+                        if dir.exists() {
+                            return Err(CliError::Io(std::io::Error::from(std::io::ErrorKind::AlreadyExists)));
+                        }
+                        std::fs::create_dir_all(&dir)?;
+                        dir.join("Simplex.toml")
+                    }
+                    None => Config::get_default_path()?,
+                };
 
                 Ok(Init::run(simplex_conf_path, additional_flags)?)
             }
