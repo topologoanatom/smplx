@@ -57,52 +57,53 @@ impl Init {
         };
 
         let default_lib_rs_file_content: &[u8] = { b"pub mod artifacts;" };
-        let default_test_file_content = format!(
-            "\
-use {name}::artifacts::p2pk::P2pkProgram;
-use {name}::artifacts::p2pk::derived_p2pk::{{P2pkArguments, P2pkWitness}};
+        let default_test_file_content = r#"// Generated artifacts are produced by `simplex build` from your .simf contracts.
+// Replace `my_project` with your actual crate name.
+//
+//use my_project::artifacts::my_contract::MyContractProgram;
+//use my_project::artifacts::my_contract::derived_p2pk::{MyContractArguments, MyContractWitness};
+//use simplex::constants::DUMMY_SIGNATURE;
+//use simplex::transaction::{FinalTransaction, PartialInput, ProgramInput, RequiredSignature};
 
-use simplex::constants::DUMMY_SIGNATURE;
-use simplex::transaction::{{FinalTransaction, PartialInput, PartialOutput, ProgramInput, RequiredSignature}};
-use simplex::utils::tr_unspendable_key;
-
+/// Example: fund a Simplicity script output.
+///
+/// For a complete working example, run:
+///   simplex example basic
+///
+/// Or browse the source at:
+///   <https://github.com/BlockstreamResearch/smplx/tree/master/examples/basic>
 #[simplex::test]
-fn p2pk_test(context: simplex::TestContext) -> anyhow::Result<()> {{
-    let signer = context.get_signer();
-    let provider = context.get_provider();
+fn my_contract_test(_context: simplex::TestContext) -> anyhow::Result<()> {
+    // --- Step 1: Get your signer and provider ---
+    // let signer = context.get_default_signer();
+    // let provider = context.get_default_provider();
 
-    // Build the p2pk program with its arguments
-    let arguments = P2pkArguments {{
-        public_key: signer.get_schnorr_public_key().unwrap().serialize(),
-    }};
-    let program = P2pkProgram::new(tr_unspendable_key(), arguments);
-    let script = program.get_program().get_script_pubkey(context.get_network()).unwrap();
+    // --- Step 2: Instantiate your program with typed arguments ---
+    // let arguments = MyContractArguments {
+    //     public_key: signer.get_schnorr_public_key().serialize(),
+    // };
+    // let program = MyContractProgram::new(arguments);
+    // let script = program.get_script_pubkey(context.get_network());
 
-    // Fund the p2pk script output
-    let mut ft = FinalTransaction::new(*context.get_network());
-    ft.add_output(PartialOutput::new(script.clone(), 50, context.get_network().policy_asset()));
-    let (tx, _) = signer.finalize(&ft).unwrap();
-    let txid = provider.broadcast_transaction(&tx).unwrap();
-    provider.wait(&txid)?;
+    // --- Step 3: Fund the script ---
+    // let txid = signer.send(script.clone(), 50)?;
+    // println!("Funded: {}", txid);
 
-    // Spend the p2pk output by providing the witness signature
-    let mut utxos = provider.fetch_scripthash_utxos(&script).unwrap();
-    utxos.retain(|el| el.1.asset.explicit().unwrap() == context.get_network().policy_asset());
-
-    let witness = P2pkWitness {{ signature: DUMMY_SIGNATURE }};
-    let mut ft = FinalTransaction::new(*context.get_network());
-    ft.add_program_input(
-        PartialInput::new(utxos[0].0, utxos[0].1.clone()),
-        ProgramInput::new(Box::new(program.get_program().clone()), Box::new(witness)),
-        RequiredSignature::Witness(\"SIGNATURE\".to_string()),
-    ).unwrap();
-    let (tx, _) = signer.finalize(&ft).unwrap();
-    let txid = provider.broadcast_transaction(&tx).unwrap();
-    provider.wait(&txid)?;
+    // --- Step 4: Fetch UTXOs and spend ---
+    // let utxos = provider.fetch_scripthash_utxos(&script)?;
+    // let witness = MyContractWitness { signature: DUMMY_SIGNATURE };
+    // let mut ft = FinalTransaction::new();
+    // ft.add_program_input(
+    //     PartialInput::new(utxos[0].clone()),
+    //     ProgramInput::new(Box::new(program.as_ref().clone()), Box::new(witness)),
+    //     RequiredSignature::Witness("SIGNATURE".to_string()),
+    // );
+    // let txid = signer.broadcast(&ft)?;
+    // println!("Spent: {}", txid);
 
     Ok(())
-}}"
-        );
+}
+"#;
         let default_p2pk_simf_file_content: &[u8] = {
             b"\
 fn main() {

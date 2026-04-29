@@ -38,7 +38,7 @@ Create a new Simplex project in a new directory:
 simplex new <name>
 ```
 
-This scaffolds a complete project with a `Simplex.toml`, `Cargo.toml`, a p2pk contract in `simf/p2pk.simf`, and a working integration test in `tests/p2pk_test.rs`.
+This scaffolds a complete project with a `Simplex.toml`, `Cargo.toml`, a p2pk contract in `simf/p2pk.simf`, and sketch of an integration test in `tests/p2pk_test.rs`.
 
 To scaffold a full working example instead:
 
