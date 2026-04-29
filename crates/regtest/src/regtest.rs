@@ -14,7 +14,7 @@ pub struct Regtest {}
 
 impl Regtest {
     pub fn from_config(config: RegtestConfig) -> Result<(RegtestClient, Signer), RegtestError> {
-        let client = RegtestClient::new();
+        let client = RegtestClient::new(&config);
 
         let provider = Box::new(SimplexProvider::new(
             client.esplora_url(),
@@ -39,6 +39,7 @@ impl Regtest {
         rpc_provider.generate_blocks(100)?;
 
         rpc_provider.send_to_address(&signer.get_address(), btc2sat(bitcoins), None)?;
+        rpc_provider.generate_blocks(1)?;
 
         // wait for electrs to index
         let mut attempts = 0;

@@ -1,7 +1,8 @@
 ![](https://github.com/user-attachments/assets/c4661df7-6101-4c46-9376-dedaeef8056b)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/BlockstreamResearch/smplx/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/ci.yml)
+[![Tests](https://github.com/BlockstreamResearch/smplx/actions/workflows/crates.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/crates.yml)
+[![Integration](https://github.com/BlockstreamResearch/smplx/actions/workflows/fixtures.yml/badge.svg?branch=master)](https://github.com/BlockstreamResearch/smplx/workflows/fixtures.yml)
 [![Community](https://img.shields.io/endpoint?color=neon&logo=telegram&label=Chat&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Fsimplicity_community)](https://t.me/simplicity_community)
 
 # Smplx
@@ -68,10 +69,15 @@ out_dir = "./src/artifacts"
 [regtest]
 mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
 bitcoins = 10_000_000
+rpc_port = 18443
+esplora_port = 3000
+rpc_user = "user"
+rpc_password = "password"
 
 [test]
 mnemonic = "exist carry drive collect lend cereal occur much tiger just involve mean"
 bitcoins = 10_000_000
+verbosity = 3 # 1 - none, 2 - warning, 3 - debug, 4 - trace
 
 [test.esplora]
 url = "<esplora url>"
@@ -91,17 +97,22 @@ Where:
   - `out_dir` - The output directory where contracts artifacts are generated.
 - `regtest` (`simplex regtest` config)
   - `mnemonic` - The signer's mnemonic regtest will send initial funds to.
-  - `bitcoins` - Initial coins available to the signer
+  - `bitcoins` - Initial coins available to the signer.
+  - `rpc_port` - The port Elements regtest node will listen on.
+  - `esplora_port` - The port Electrs will listen on.
+  - `rpc_user` - Elements regtest RPC username.
+  - `rpc_password` - Elements regtest RPC password.
 - `test` (`simplex test` config)
+  - `mnemonic` - The signer's mnemonic internal regtest will send initial funds to.
+  - `bitcoins` - Initial coins available to the signer.
+  - `verbosity` - Simplicity pruning log level.
   - `esplora`
-    - `url` - Esplora API endpoint url
+    - `url` - Esplora API endpoint url.
     - `network` - Esplora network type (`Liquid`, `LiquidTestnet`, `ElementsRegtest`).
   - `rpc`
-    - `url` - Elements RPC endpoint url
-    - `username` - Elements RPC username
-    - `password` - Elements RPC password
-  - `mnemonic` - The signer's mnemonic internal regtest will send initial funds to.
-  - `bitcoins` - Initial coins available to the signer
+    - `url` - Elements RPC endpoint url.
+    - `username` - Elements RPC username.
+    - `password` - Elements RPC password.
 
 ### CLI
 
@@ -240,7 +251,6 @@ We are open to any mind-blowing ideas! Please take a look at our [contributing g
 
 - [x] Complete `simplex init`, `simplex new`, `simplex example`, and `simplex clean` commands.
 - [ ] SDK support for confidential assets, taproot signer, and custom witness signatures.
-- [ ] Simplicity storage compatibility.
 - [ ] Local regtest 10x speedup.
 - [ ] Regtest cheat codes.
 - [ ] Browser compatibility.

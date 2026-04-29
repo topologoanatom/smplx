@@ -3,7 +3,7 @@ resolver = "3"
 members = [
     "crates/*",
 ]
-exclude = ["examples/basic"]
+exclude = ["examples/basic", "fixtures"]
 
 [workspace.package]
 license = "MIT"
@@ -13,15 +13,16 @@ edition = "2024"
 multiple_crate_versions = "allow"
 
 [workspace.dependencies]
-smplx-macros = { path = "./crates/macros", version = "0.0.3" }
-smplx-build = { path = "./crates/build", version = "0.0.3" }
-smplx-test = { path = "./crates/test", version = "0.0.3" }
-smplx-regtest = { path = "./crates/regtest", version = "0.0.3" }
-smplx-sdk = { path = "./crates/sdk", version = "0.0.3" }
-smplx-std = { path = "./crates/simplex", version = "0.0.3" }
+smplx-macros = { path = "./crates/macros", version = "0.0.4" }
+smplx-build = { path = "./crates/build", version = "0.0.4" }
+smplx-test = { path = "./crates/test", version = "0.0.4" }
+smplx-regtest = { path = "./crates/regtest", version = "0.0.4" }
+smplx-sdk = { path = "./crates/sdk", version = "0.0.4" }
+smplx-std = { path = "./crates/simplex", version = "0.0.4" }
 
 serde = { version = "1.0.228", features = ["derive"]}
 hex = { version = "0.4.3" }
+hmac = { version = "0.12.1" }
 sha2 = { version = "0.10.9", features = ["compress"] }
 thiserror = { version = "2.0.18" }
 toml = { version = "0.9.8" }

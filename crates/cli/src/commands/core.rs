@@ -19,13 +19,14 @@ pub enum Command {
     },
     /// Prints current Simplex config in use
     Config,
-    /// Spins up the local Electrs + Elements regtest
+    /// Spins up local Electrs + Elements regtest
     Regtest,
     /// Runs Simplex tests
     Test {
-        /// The list of test names to run
-        #[arg(long)]
-        tests: Vec<String>,
+        /// Name or a substring of the tests to run
+        #[arg()]
+        name: Option<String>,
+
         #[command(flatten)]
         additional_flags: TestFlags,
     },
@@ -48,7 +49,7 @@ pub struct InitFlags {
     pub lib: bool,
 }
 
-#[derive(Debug, Args, Copy, Clone)]
+#[derive(Debug, Args, Clone)]
 pub struct TestFlags {
     /// Show output from successful tests
     #[arg(long)]
@@ -59,4 +60,7 @@ pub struct TestFlags {
     /// Run ignored tests
     #[arg(long)]
     pub ignored: bool,
+    /// Log simplicity pruning stack trace
+    #[arg(short = 'v', long)]
+    pub verbose: bool,
 }

@@ -5,8 +5,10 @@ use electrsd::bitcoind::bitcoincore_rpc::Auth;
 use smplx_regtest::Regtest;
 use smplx_regtest::client::RegtestClient;
 
+use smplx_sdk::global::set_global_config;
 use smplx_sdk::provider::{EsploraProvider, ProviderInfo, ProviderTrait, SimplexProvider, SimplicityNetwork};
 use smplx_sdk::signer::Signer;
+use smplx_sdk::utils::random_mnemonic;
 
 use crate::config::TestConfig;
 use crate::error::TestError;
@@ -23,6 +25,15 @@ pub struct TestContext {
 impl TestContext {
     pub fn new(config_path: PathBuf) -> Result<Self, TestError> {
         let config = TestConfig::from_file(&config_path)?;
+
+        // error is ignored because we assume that all tests use the same verbosity
+        let _ = set_global_config(
+            config
+                .verbosity
+                .expect("This will be set")
+                .try_into()
+                .expect("Validated in CLI"),
+        );
 
         let (signer, provider_info, client) = Self::setup(&config)?;
 
@@ -52,6 +63,10 @@ impl TestContext {
         };
 
         Signer::new(mnemonic, provider)
+    }
+
+    pub fn random_signer(&self) -> Signer {
+        self.create_signer(random_mnemonic().as_str())
     }
 
     pub fn get_default_signer(&self) -> &Signer {

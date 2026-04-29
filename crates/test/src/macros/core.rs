@@ -3,6 +3,8 @@ use syn::parse::Parser;
 
 use crate::TEST_ENV_NAME;
 
+pub const SMPLX_TEST_MARKER: &str = "_smplx_test";
+
 type AttributeArgs = syn::punctuated::Punctuated<syn::Meta, syn::Token![,]>;
 
 pub fn expand(args: TokenStream, input: syn::ItemFn) -> syn::Result<TokenStream> {
@@ -15,7 +17,7 @@ pub fn expand(args: TokenStream, input: syn::ItemFn) -> syn::Result<TokenStream>
 // TODO: args?
 fn expand_inner(input: &syn::ItemFn, _args: AttributeArgs) -> syn::Result<proc_macro2::TokenStream> {
     let ret = &input.sig.output;
-    let name = &input.sig.ident;
+    let name = quote::format_ident!("{}_{}", &input.sig.ident.to_string(), SMPLX_TEST_MARKER);
     let inputs = &input.sig.inputs;
     let body = &input.block;
     let attrs = &input.attrs;
@@ -34,7 +36,7 @@ fn expand_inner(input: &syn::ItemFn, _args: AttributeArgs) -> syn::Result<proc_m
             }
 
             let test_context = match std::env::var(#simplex_test_env) {
-                Err(e) => {
+                Err(_) => {
                     panic!("Failed to run this test, required to use `simplex test`");
                 },
                 Ok(path) => {
