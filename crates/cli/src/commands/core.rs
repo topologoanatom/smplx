@@ -6,8 +6,6 @@ pub enum Command {
     Init {
         /// Name of the new project
         name: Option<String>,
-        #[command(flatten)]
-        additional_flags: InitFlags,
     },
     /// Prints current Simplex config in use
     Config,
@@ -26,13 +24,6 @@ pub enum Command {
     Build,
     /// Clean Simplex artifacts in the current directory
     Clean,
-}
-
-#[derive(Debug, Args, Copy, Clone)]
-pub struct InitFlags {
-    /// Generate a draft Rust library instead of just `Simplex.toml`
-    #[arg(long)]
-    pub lib: bool,
 }
 
 #[derive(Debug, Args, Clone)]

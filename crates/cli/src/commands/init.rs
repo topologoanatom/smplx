@@ -1,7 +1,7 @@
 use std::{fs, fs::OpenOptions, io::Write, path::Path};
 
 use crate::commands::error::CommandError;
-use crate::commands::{InitFlags, error::InitError};
+use crate::commands::error::InitError;
 use crate::config::INIT_CONFIG;
 
 pub const SIMPLEX_CRATE_NAME: &str = "smplx-std";
@@ -9,10 +9,8 @@ pub const SIMPLEX_CRATE_NAME: &str = "smplx-std";
 pub struct Init;
 
 impl Init {
-    pub fn run(smplx_conf_path: impl AsRef<Path>, flags: &InitFlags) -> Result<(), CommandError> {
-        if flags.lib {
-            Self::generate_lib_inplace(&smplx_conf_path)?
-        }
+    pub fn run(smplx_conf_path: impl AsRef<Path>) -> Result<(), CommandError> {
+        Self::generate_lib_inplace(&smplx_conf_path)?;
 
         Self::fill_simplex_toml(smplx_conf_path)?;
 

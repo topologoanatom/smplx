@@ -24,7 +24,7 @@ pub struct Cli {
 impl Cli {
     pub async fn run(&self) -> Result<(), CliError> {
         match &self.command {
-            Command::Init { name, additional_flags } => {
+            Command::Init { name } => {
                 let simplex_conf_path = match name {
                     Some(name) => {
                         let dir = std::env::current_dir()?.join(name);
@@ -37,7 +37,7 @@ impl Cli {
                     None => Config::get_default_path()?,
                 };
 
-                Ok(Init::run(simplex_conf_path, additional_flags)?)
+                Ok(Init::run(simplex_conf_path)?)
             }
             Command::Config => {
                 let config_path = Config::get_default_path()?;
