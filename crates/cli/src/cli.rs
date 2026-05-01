@@ -28,9 +28,11 @@ impl Cli {
                 let simplex_conf_path = match name {
                     Some(name) => {
                         let dir = std::env::current_dir()?.join(name);
+
                         if dir.exists() {
                             return Err(CliError::Io(std::io::Error::from(std::io::ErrorKind::AlreadyExists)));
                         }
+
                         std::fs::create_dir_all(&dir)?;
                         dir.join("Simplex.toml")
                     }
